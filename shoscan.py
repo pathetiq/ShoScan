@@ -143,7 +143,7 @@ if __name__ == '__main__':
     print "Output file - short version (ip,port,protocol): " + shortOutputFile+"."+args.fileout
     print "------------------------------------------\n"
     print "Launching search..."
-    print "Results will be displayed after search is compelted..."
+    print "Results will be displayed after search is completed..."
 
 
     # Search shodan for each IPs
