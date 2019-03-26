@@ -19,6 +19,12 @@ A simple python script to scan multiple IPs through Shodan using the search API.
 
 Please submit issues with your Pull Requests
 
+### Short results 
+
+- IP
+- Port
+- Protocol
+
 ### Full results: SHODAN Search Response - Data Returned
 - city
 - region_code
