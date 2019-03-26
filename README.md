@@ -6,6 +6,7 @@ A simple python script to scan multiple IPs through Shodan using the search API.
 
 - Open shoscan.py and update your `SHODAN_API_KEY` value.
 - pip install -r requirements.txt
+- compile a file (inputIpListFile.txt) with a list of IPs, 1 IP per line
 - python shoscan.py -f inputIpListFile.txt
 - Enjoy your results in csv files and in your console
 
