@@ -18,28 +18,28 @@ import argparse
 import time
 
 
-def writeResults(results,outputFile,shortOutputFile):
-    '''
+def write_results(results, output_file, short_output_file):
+    """
     :param results: shodan scan resulsts
-    :param outputFile: output file name to write to
-    :param shortOutputFile: prefix to filename of the shoirt version
-    '''
+    :param output_file: output file name to write to
+    :param short_output_file: prefix to filename of the shoirt version
+    """
     short = results['short']
     full = results['full']
 
     # write short version
-    with open(shortOutputFile+"."+outputFile, mode='w') as out_file:
+    with open(output_file+"."+short_output_file, mode='w') as out_file:
         out_writer = csv.writer(out_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         for ip in short:
             try:
                 for i in range(len(short[ip]['port'])):
-                    out_writer.writerow([ip,short[ip]['port'][i],short[ip]['protocol'][i]])
+                    out_writer.writerow([ip, short[ip]['port'][i], short[ip]['protocol'][i]])
             except KeyError as e:
                 continue
 
     # write full version
-    with open(outputFile, mode='w') as out_file:
+    with open(output_file, mode='w') as out_file:
         out_writer = csv.writer(out_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         for ip in full:
@@ -48,22 +48,22 @@ def writeResults(results,outputFile,shortOutputFile):
 
                 for item in full[ip]['all']:
                     for i in item:
-                        out_writer.writerow([ip,i,item[i]])
+                        out_writer.writerow([ip, i, item[i]])
             except KeyError as e:
                 continue
 
 
     return
 
-def parseShodanSearch(ipList):
-    '''
-    :param ipList: List of IPs received from the uiser
+def parse_shodan_search(ip_list):
+    """
+    :param ip_list: List of IPs received from the uiser
     :return: short (ip port portocol) and long results (everything)
-    '''
+    """
     # for all IPs in the result
-    for ip in ipList:
+    for ip in ip_list:
 
-        print "For IP: " + str(ip) + ""
+        print("For IP: " + str(ip) + "")
         results[ip] = {}
         shortResults[ip] = {}
         port = []
@@ -72,35 +72,35 @@ def parseShodanSearch(ipList):
 
         try:
             # for all data per IP
-            for i in ipList[ip]['data']:
+            for i in ip_list[ip]['data']:
 
                 # For all data in "data" variable
-                tmpPro = ""
-                tmpPort = ""
+                tmp_pro = ""
+                tmp_port = ""
                 for j in i:
 
                     # get the protocol
                     if str(j) == "_shodan":
-                        tmpPro = "(" + str(i[j]['module']) + ")"
+                        tmp_pro = "(" + str(i[j]['module']) + ")"
                         protocol.append(str(i[j]['module']))
                     if str(j) == "port":
-                        tmpPort = "- " + str(i[j]) + " "
+                        tmp_port = "- " + str(i[j]) + " "
                         port.append(str(i[j]))
-                    #print str(j)+ " AND " + str(i[j])
+                    # print str(j)+ " AND " + str(i[j])
                     rest.append({str(j):str([i[j]])})
-                print tmpPort+tmpPro
+                print(tmp_port+tmp_pro)
             # store results for short version (ip, port, protocol) or full listing of data in Shodan
-            shortResults[ip] = {'port':port,'protocol':protocol}
-            results[ip] = {'all':rest}
+            shortResults[ip] = {'port': port, 'protocol': protocol}
+            results[ip] = {'all': rest}
 
         # no port for a specific IP
         except TypeError as e:
-            print "- No port found"
-            print "--------- NEXT IP ---------"
+            print("- No port found")
+            print("--------- NEXT IP ---------")
             continue
-        print "--------- NEXT IP ---------"
+        print("--------- NEXT IP ---------")
 
-    return {'short':shortResults,'full':results}
+    return {'short': shortResults, 'full': results}
 
 if __name__ == '__main__':
     # config TODO: config.ini to read shodan key from
@@ -110,12 +110,12 @@ if __name__ == '__main__':
     shortOutputFile = "shortResults"
 
     if SHODAN_API_KEY == "YOURKEY":
-        print "Please edit shoscan.py and replace 'SHODAN_API_KEY' with your real key value"
+        print("Please edit shoscan.py and replace 'SHODAN_API_KEY' with your real key value")
         quit()
 
     # arg parse
     parser = argparse.ArgumentParser(description='Port scanning through Shodan.io')
-    parser.add_argument('--filename', '-f', default='iplist.txt',required=True)
+    parser.add_argument('--filename', '-f', default='iplist.txt', required=True)
     parser.add_argument('--fileout', '-o', default=outputFile)
     args = parser.parse_args()
 
@@ -136,24 +136,24 @@ if __name__ == '__main__':
  `--`---' `--`-' `-`--`   `--`--''    `--`---'              `--`        `--`./  `--` 
                                                               by PathetiQ - 2019/03 
     """
-    print art
-    print "------------------------------------------"
-    print "Using input file: " + args.filename
-    print "Output file - all Shodan's details: " + args.fileout
-    print "Output file - short version (ip,port,protocol): " + shortOutputFile+"."+args.fileout
-    print "------------------------------------------\n"
-    print "Launching search..."
-    print "Results will be displayed after search is completed..."
+    print(art)
+    print("------------------------------------------")
+    print("Using input file: " + args.filename)
+    print("Output file - all Shodan's details: " + args.fileout)
+    print("Output file - short version (ip,port,protocol): " + args.fileout+"."+shortOutputFile)
+    print("------------------------------------------\n")
+    print("Launching search...")
+    print("Results will be displayed after search is completed...")
 
 
     # Search shodan for each IPs
     ipInfo = {}
     for ip in ips:
-        time.sleep(1) # Forced Shodan threshold
+        time.sleep(1)  # Forced Shodan threshold
         try:
             hostinfo = api.host(ip)
             ipInfo[ip] = hostinfo
-        except shodan.APIError, e:
+        except shodan.APIError as e:
             ipInfo[ip] = '{}'.format(e)
 
     # format the data
@@ -163,8 +163,8 @@ if __name__ == '__main__':
     results = {}
 
     # parse the data
-    res = parseShodanSearch(ipList)
+    res = parse_shodan_search(ipList)
     # write it out in csv
-    writeResults(res,args.fileout,shortOutputFile)
+    write_results(res, args.fileout, shortOutputFile)
 
     quit()
